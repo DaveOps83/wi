@@ -12,7 +12,7 @@
 
 resource "aws_route53_record" "staging" {
    zone_id = "${var.hosted_zone_id}"
-   name = "staging.weareweekday.com"
+   name = "staging.origin.weareweekday.com"
    type = "A"
    # ttl = "300"
    records = ["${var.website_endpoint}"]

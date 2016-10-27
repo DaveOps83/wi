@@ -42,9 +42,9 @@ module "jenkins_instance" {
     instance_key_pair = "${lookup(var.jenkins_key_pair, var.aws_target_env)}"
     instance_subnet = "${module.vpc.primary_private_subnet}"
     instance_associate_public_ip_address = "false"
-    
+
     instance_security_group = "${module.jenkins_security_group.id}"
-    
+
     instance_monitoring = "true"
     instance_disable_api_termination = "false"
     instance_tag_name = "${var.stack_name}-jenkins-ci"
@@ -104,16 +104,22 @@ module "jenkins_elb" {
     tcp_elb_tag_project = "${var.stack_name}"
     tcp_elb_tag_environment = "${var.aws_target_env}"
 }
+
 module "web_bucket" {
     source = "modules/s3bucket"
-
 }
+
+module "cloudfront" {
+    source = "modules/cloudfront"
+    website_endpoint =  "${module.web_bucket.website_endpoint}"
+}
+
 
 # TODO : as Terraform is not authorised to access Route 53, this have to be done manually
 
 # module "route53_zone" {
 #     source = "modules/route53_zone"
-    
+
 # }
 
 # * aws_route53_record.www: missing dependency: aws_route53_zone.primary
