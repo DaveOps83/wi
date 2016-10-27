@@ -1,0 +1,9 @@
+WAWTerraformAWSCreds.csv
+credentials.sh
+terraform/.terraform/environment
+terraform/.terraform/terraform.tfstate
+terraform/.terraform/terraform.tfstate.backup
+terraform/.terraform/modules/336b4fab8d4b3e3f4981606e10f1c2f6
+terraform/weareweekday.com/logs/staging.log
+TerraformAWSCredentials.csv
+terraform/.terraform
