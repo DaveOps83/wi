@@ -8,7 +8,7 @@ variable "stack_name" {
 }
 variable "stack_description" {
   description = "Description tag value to be used for all resources within the stack."
-  default = "weareweekday.com stack"
+  default = "weareweekday.com website stack"
 }
 variable "region" {
     description = "AWS region in which to launch stack."
@@ -56,4 +56,9 @@ variable "bastion_key_pair" {
         staging = "weekday"
         prod = "weekday"
   }
+}
+
+variable "stack_domain" {
+  description = "AWS key pair to use when launching the bastion instance."
+  default = "weareweekday.com"
 }

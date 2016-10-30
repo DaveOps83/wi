@@ -17,12 +17,27 @@ module "vpc" {
 module "bastion_security_group" {
     source = "modules/bastion_security_group"
     bastion_security_group_vpc_id = "${module.vpc.id}"
-    # bastion_security_group_ssh_source_range = "${var.dc_egress_range}"
     bastion_security_group_jenkins_security_group = "${module.jenkins_security_group.id}"
     bastion_security_group_name = "${var.stack_name}-bastion"
     bastion_security_group_description = "${var.stack_description}"
     bastion_security_group_tag_project = "${var.stack_name}"
     bastion_security_group_tag_environment = "${var.aws_target_env}"
+}
+
+module "bastion_instance" {
+    source = "modules/instance"
+    instance_ami = "${lookup(var.bastion_ami, lookup(var.region, var.aws_target_env))}"
+    instance_type = "t2.nano"
+    instance_key_pair = "${lookup(var.bastion_key_pair, var.aws_target_env)}"
+    instance_subnet = "${module.vpc.primary_public_subnet}"
+    instance_associate_public_ip_address = "true"
+    instance_security_group = "${module.bastion_security_group.id}"
+    instance_monitoring = "false"
+    instance_disable_api_termination = "false"
+    instance_tag_name = "${var.stack_name}-bastion"
+    instance_tag_description = "${var.stack_description}"
+    instance_tag_project = "${var.stack_name}"
+    instance_tag_environment = "${var.aws_target_env}"
 }
 
 module "jenkins_security_group" {
@@ -42,30 +57,10 @@ module "jenkins_instance" {
     instance_key_pair = "${lookup(var.jenkins_key_pair, var.aws_target_env)}"
     instance_subnet = "${module.vpc.primary_private_subnet}"
     instance_associate_public_ip_address = "false"
-
     instance_security_group = "${module.jenkins_security_group.id}"
-
-    instance_monitoring = "true"
-    instance_disable_api_termination = "false"
-    instance_tag_name = "${var.stack_name}-jenkins-ci"
-    instance_tag_description = "${var.stack_description}"
-    instance_tag_project = "${var.stack_name}"
-    instance_tag_environment = "${var.aws_target_env}"
-}
-
-module "bastion_instance" {
-    source = "modules/instance"
-    instance_ami = "${lookup(var.bastion_ami, lookup(var.region, var.aws_target_env))}"
-    instance_type = "t2.nano"
-    instance_key_pair = "${lookup(var.bastion_key_pair, var.aws_target_env)}"
-    instance_subnet = "${module.vpc.primary_public_subnet}"
-    instance_associate_public_ip_address = "true"
-    instance_security_group = "${module.bastion_security_group.id}"
-    # instance_profile = "${module.bastion_instance_profile.name}"
     instance_monitoring = "false"
     instance_disable_api_termination = "false"
-    # instance_user_data = "${module.bastion_user_data.user_data}"
-    instance_tag_name = "${var.stack_name}-bastion"
+    instance_tag_name = "${var.stack_name}-jenkins-ci"
     instance_tag_description = "${var.stack_description}"
     instance_tag_project = "${var.stack_name}"
     instance_tag_environment = "${var.aws_target_env}"
@@ -107,29 +102,29 @@ module "jenkins_elb" {
 
 module "web_bucket" {
     source = "modules/s3bucket"
+    s3_website_domain = "${var.stack_domain}"
+    s3_env = "${var.aws_target_env}"
+}
+
+module "route53_zone" {
+    source = "modules/route53_zone"
+    dns_website_domain = "${var.stack_domain}"
+    dns_env = "${var.aws_target_env}"
+}
+
+module "route53_record" {
+    source = "modules/route53_record"
+    dns_hosted_zone_id = "${module.route53_zone.hosted_zone_id}"
+    dns_website_domain = "${var.stack_domain}"
+    dns_s3_bucket = "${module.web_bucket.name}.s3.amazonaws.com"
+    dns_jenkins_elb = "${module.jenkins_elb.dns_name}"
+    dns_cloudfront = "${module.cloudfront.domain_name}"
+    dns_env = "${var.aws_target_env}"
 }
 
 module "cloudfront" {
     source = "modules/cloudfront"
-    cloudfront_website_endpoint =  "${module.web_bucket.website_endpoint}"
-    cloudfront_tag_project =
-    cloudfront_tag_environment =
+    cloudfront_origin_domain = "${module.web_bucket.name}.s3.amazonaws.com"
+    cloudfront_tag_project = "${var.stack_name}"
+    cloudfront_tag_environment = "${var.aws_target_env}"
 }
-
-
-# TODO : as Terraform is not authorised to access Route 53, this have to be done manually
-
-# module "route53_zone" {
-#     source = "modules/route53_zone"
-
-# }
-
-# * aws_route53_record.www: missing dependency: aws_route53_zone.primary
-# * aws_route53_record.www: missing dependency: aws_s3_bucket.staticwebsite
-# * aws_route53_record.www: missing dependency: aws_s3_bucket.staticwebsite
-
-# module "route53_record" {
-#     source = "modules/route53_record"
-#     website_endpoint =  "${module.web_bucket.website_endpoint}"
-#     hosted_zone_id  = "${module.web_bucket.hosted_zone_id}"
-# }

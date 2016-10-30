@@ -3,7 +3,7 @@ resource "aws_cloudfront_origin_access_identity" "s3_access_identity" {
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name = "${var.website_endpoint}"
+    domain_name = "${var.cloudfront_origin_domain}"
     origin_id   = "web_bucket"
     s3_origin_config {
       origin_access_identity = "${aws_cloudfront_origin_access_identity.s3_access_identity.cloudfront_access_identity_path}"
@@ -30,10 +30,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     geo_restriction {
       restriction_type = "none"
     }
-  }
-  tags {
-      Project = "${var.cloudfront_tag_project}"
-      Environment = "${var.cloudfront_tag_environment}"
   }
   viewer_certificate {
     cloudfront_default_certificate = true

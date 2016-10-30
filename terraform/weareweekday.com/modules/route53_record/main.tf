@@ -1,19 +1,23 @@
-# resource "aws_route53_record" "www" {
-#   zone_id = "${var.primary_zone_id}"
-#   name = "staging.weareweekday.com"
-#   type = "A"
+resource "aws_route53_record" "jenkins" {
+  zone_id = "${var.dns_hosted_zone_id}"
+  name = "ci.${var.dns_env}.${var.dns_website_domain}"
+  type = "CNAME"
+  ttl = "300"
+  records = ["${var.dns_jenkins_elb}"]
+}
 
-#   alias {
-#     name = "${var.website_bucket_name}"
-#     zone_id = "${var.website_zone_id}"
-#     evaluate_target_health = false
-#   }
-# }
+resource "aws_route53_record" "web_bucket" {
+  zone_id = "${var.dns_hosted_zone_id}"
+  name = "origin.${var.dns_env}.${var.dns_website_domain}"
+  type = "CNAME"
+  ttl = "300"
+  records = ["${var.dns_s3_bucket}"]
+}
 
-resource "aws_route53_record" "staging" {
-   zone_id = "${var.hosted_zone_id}"
-   name = "staging.origin.weareweekday.com"
-   type = "A"
-   # ttl = "300"
-   records = ["${var.website_endpoint}"]
+resource "aws_route53_record" "cloudfront" {
+  zone_id = "${var.dns_hosted_zone_id}"
+  name = "cdn.${var.dns_env}.${var.dns_website_domain}"
+  type = "CNAME"
+  ttl = "300"
+  records = ["${var.dns_cloudfront}"]
 }

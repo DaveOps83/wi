@@ -1,1 +1,1 @@
-output "primary_zone_id" { value = "${aws_route53_zone.primary.zone_id}" }
+output "hosted_zone_id" { value = "${aws_route53_zone.environments.zone_id}" }
