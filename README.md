@@ -8,8 +8,8 @@ clone repository
 
 Create an AWS User Terraform (with admin access)
 
-Make sure Terraform has credentials you created by setting the variables below.
-#User Terraform
+Make sure Terraform has credentials you created above by setting the variables below.
+
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 
