@@ -6,21 +6,20 @@ brew install terraform
 
 clone repository
 
-create credentials.sh with the following content:
-+#!/bin/bash
-+#User Terraform
-+export AWS_ACCESS_KEY_ID=""
-+export AWS_SECRET_ACCESS_KEY=""
+Create an AWS User Terraform (with admin access)
+
+Make sure Terraform has credentials you created above by setting the variables below.
+
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
 
 Create AWS User Terraform (with admin access) , add credentials to credentials.sh
 Create an S3 bucket , weareweekday.com-terraform-state-files , set Properties->Grantee to Any Auth..., tick List and Upload/Delete
 
 cd weekday-infrastructure/terraform
 
-make wrapper.sh and credentials.sh executable
-chmod +x wrapper.sh 
-credentials.sh sets env vars in terraform context 
-chmod +x credentials.sh 
+make wrapper.sh executable
+chmod +x wrapper.sh
 
 download and update modules
 ./wrapper.sh get weareweekday.com staging
@@ -39,7 +38,7 @@ What will be created:
 On your dev:
 
 configure ssh forwarding (only once)
-ssh-add -K ~/Downloads/weekday.pem 
+ssh-add -K ~/Downloads/weekday.pem
 
 ssh into public bastion instance
 ssh -A ec2-user@ec2-52-211-238-228.eu-west-1.compute.amazonaws.com
@@ -56,22 +55,22 @@ Configure private instance for CI:
 	sudo npm install --global gulp
 
 	3.Install Jenkins
-	
+
 		When installing plugins, following error may occur:
 			Problem accessing /pluginManager/install. Reason:
 	    	No valid crumb was included in the request
 
-	    There seems to be quite a simple solution to revert the Jenkins 2.0 startup behaviour 
+	    There seems to be quite a simple solution to revert the Jenkins 2.0 startup behaviour
 	    ( and avoid above error ) so that it mimics Jenkins
 	 	1.642.4 to an extent, by setting an environmental variable of:
 
-	 	JAVA_OPTS=-Djenkins.install.runSetupWizard=false	
+	 	JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
 		right before installing.
 
 		(https://github.com/vfarcic/ms-lifecycle/issues/3)
 
-	
+
 	sudo yum -y update
 
 	Add the Jenkins repository to available packages:
@@ -87,7 +86,7 @@ Configure private instance for CI:
 	sudo chkconfig --add jenkins
 
 	OK. Jenkins is actually up and running at this point. We can verify this by accessing localhost on port 8080 with wget.
- 
+
 	wget http://localhost:8080
 
 	4.Configure route 53 record for Jenkins , so that it is accessible via browser
@@ -95,12 +94,7 @@ Configure private instance for CI:
 
 	At ci.weareweekday.com
 
-	5.Install S3 plugin via Jenkins web interface 
+	5.Install S3 plugin via Jenkins web interface
 	https://wiki.jenkins-ci.org/display/JENKINS/S3+Plugin
 
-	6.Configure build job like the following 
-
-
-
-
-	
+	6.Configure build job like the following
