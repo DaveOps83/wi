@@ -111,7 +111,9 @@ module "web_bucket" {
 
 module "cloudfront" {
     source = "modules/cloudfront"
-    website_endpoint =  "${module.web_bucket.website_endpoint}"
+    cloudfront_website_endpoint =  "${module.web_bucket.website_endpoint}"
+    cloudfront_tag_project =
+    cloudfront_tag_environment =
 }
 
 

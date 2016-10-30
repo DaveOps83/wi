@@ -32,9 +32,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
   tags {
-      Name = "${var.jenkins_security_group_name}"
-      Project = "${var.jenkins_security_group_name}"
-      Environment = "${var.jenkins_security_group_tag_environment}"
+      Project = "${var.cloudfront_tag_project}"
+      Environment = "${var.cloudfront_tag_environment}"
   }
   viewer_certificate {
     cloudfront_default_certificate = true

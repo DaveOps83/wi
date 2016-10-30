@@ -39,8 +39,8 @@ if [[ ! -d $terraform_log_dir ]] ; then mkdir $terraform_log_dir; fi
 terraform_log_level="ERROR"
 export TF_LOG=$terraform_log_level
 export TF_LOG_PATH=$terraform_log_dir/$terraform_env.log
-terraform_credentials="credentials.sh"
-source $terraform_credentials 
+#terraform_credentials="credentials.sh"
+#source $terraform_credentials
 
 #Check to see if we changed environments so we can update the remote config source.
 if [[ $terraform_previous_env != ${terraform_config}_$terraform_env || ! -f ./.terraform/terraform.tfstate ]]; then
