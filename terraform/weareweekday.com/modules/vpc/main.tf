@@ -37,7 +37,7 @@ resource "aws_route_table" "primary_private" {
     route {
         cidr_block = "0.0.0.0/0"
         nat_gateway_id = "${aws_nat_gateway.primary_nat_gateway.id}"
-    }    
+    }
     tags {
         Name = "${var.vpc_name_tag}-primary-private"
         Description = "${var.vpc_description_tag}"

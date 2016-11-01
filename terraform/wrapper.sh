@@ -32,13 +32,6 @@ terraform_resource=${5:-""}
 if [[ ! -d .terraform ]] ; then mkdir .terraform; fi
 terraform_env_file=".terraform/environment"
 terraform_previous_env=$([ -f $terraform_env_file ] && echo "$(<$terraform_env_file)" || echo "unknown")
-terraform_parallelism=8
-terraform_log_dir="$terraform_config/logs"
-#Create the logs directory if it does not exist
-if [[ ! -d $terraform_log_dir ]] ; then mkdir $terraform_log_dir; fi
-terraform_log_level="ERROR"
-export TF_LOG=$terraform_log_level
-export TF_LOG_PATH=$terraform_log_dir/$terraform_env.log
 
 #Check to see if we changed environments so we can update the remote config source.
 if [[ $terraform_previous_env != ${terraform_config}_$terraform_env || ! -f ./.terraform/terraform.tfstate ]]; then
@@ -59,7 +52,6 @@ case $terraform_cmd in
     -var aws_target_env=$terraform_env \
     -no-color \
     -refresh=true \
-    -parallelism=$terraform_parallelism \
     $terraform_config
     ;;
 
@@ -70,14 +62,12 @@ case $terraform_cmd in
       -var aws_target_env=$terraform_env \
       -no-color \
       -refresh=true \
-      -parallelism=$terraform_parallelism \
       $terraform_config
     else
       terraform destroy \
       -var aws_target_env=$terraform_env \
       -no-color \
       -refresh=true \
-      -parallelism=$terraform_parallelism \
       -force \
       $terraform_config
     fi
